@@ -20,8 +20,6 @@ setup(
         "Intended Audience :: System Administrators",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
@@ -30,7 +28,7 @@ setup(
         "Topic :: System :: Systems Administration",
         "Topic :: Utilities",
     ],
-    python_requires=">=3.6",
+    python_requires=">=3.8",
     install_requires=[
         "colorama>=0.4.4",
         "rich>=10.0.0",

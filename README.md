@@ -3,7 +3,7 @@
 [![Python Tests](https://github.com/yourusername/gcp-vm-manager/actions/workflows/python-tests.yml/badge.svg)](https://github.com/yourusername/gcp-vm-manager/actions/workflows/python-tests.yml)
 [![codecov](https://codecov.io/gh/yourusername/gcp-vm-manager/branch/main/graph/badge.svg)](https://codecov.io/gh/yourusername/gcp-vm-manager)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.6+](https://img.shields.io/badge/python-3.6+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 
 A powerful command-line utility for managing Google Cloud Platform (GCP) Virtual Machines and Cloud Run instances. This tool provides an interactive interface for common GCP operations, making it easier to manage your cloud resources.
 
@@ -23,7 +23,7 @@ A powerful command-line utility for managing Google Cloud Platform (GCP) Virtual
 
 ## Prerequisites
 
-- Python 3.6 or higher
+- Python 3.8 or higher
 - Google Cloud SDK installed and configured
 - Appropriate GCP permissions
 
