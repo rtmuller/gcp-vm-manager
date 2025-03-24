@@ -1,0 +1,10 @@
+{
+    "projects": {
+        "my-project-1": {
+            "vms": []
+        },
+        "my-project-2": {
+            "vms": []
+        }
+    }
+} 

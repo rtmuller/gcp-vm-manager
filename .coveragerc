@@ -1,0 +1,20 @@
+[run]
+source = gcp_vm_manager.py
+omit = */__pycache__/*, */test_*.py, run_tests.py, gcp-vm-manager.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if self\.debug
+    if settings\.DEBUG
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    pass
+    raise ImportError
+    except ImportError
+    except Exception as e:
+    except KeyboardInterrupt:
+
+[html]
+directory = htmlcov 
