@@ -71,37 +71,46 @@ except ImportError:
     print("For best experience, install rich: pip install rich")
 
 # Configuration file path
-CONFIG_FILE = "config.json"
+import os
+# Get the directory where the script is located
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+CONFIG_FILE = os.path.join(SCRIPT_DIR, "config.json")
 
-def load_config() -> Dict[str, Any]:
+def load_config(config_file: str = None) -> Dict[str, Any]:
     """Load configuration from config.json file."""
-    if not os.path.exists(CONFIG_FILE):
+    # Use the specified config file or the default
+    config_path = config_file or CONFIG_FILE
+    
+    if not os.path.exists(config_path):
         # Create default config if it doesn't exist
         default_config = {
             "projects": {}
         }
-        with open(CONFIG_FILE, 'w') as f:
+        with open(config_path, 'w') as f:
             json.dump(default_config, f, indent=4)
         return default_config
     
     try:
-        with open(CONFIG_FILE, 'r') as f:
+        with open(config_path, 'r') as f:
             return json.load(f)
     except Exception as e:
         print(f"{Fore.RED}Error loading config file: {str(e)}{Fore.RESET}")
         return {"projects": {}}
 
-def save_config(config: Dict[str, Any]) -> None:
+def save_config(config: Dict[str, Any], config_file: str = None) -> None:
     """Save configuration to config.json file."""
+    # Use the specified config file or the default
+    config_path = config_file or CONFIG_FILE
+    
     try:
-        with open(CONFIG_FILE, 'w') as f:
+        with open(config_path, 'w') as f:
             json.dump(config, f, indent=4)
     except Exception as e:
         print(f"{Fore.RED}Error saving config file: {str(e)}{Fore.RESET}")
 
-def get_project_list() -> List[str]:
+def get_project_list(config_file: str = None) -> List[str]:
     """Get a list of all projects from the configuration."""
-    config = load_config()
+    config = load_config(config_file)
     return list(config.get("projects", {}).keys())
 
 def run_command(command: List[str], capture_output: bool = True) -> Tuple[int, str, str]:
@@ -200,12 +209,12 @@ def display_main_menu() -> int:
             print(f"{Fore.RED}Please enter a number.{Fore.RESET}")
 
 
-def display_projects() -> int:
+def display_projects(config_file: str = None) -> int:
     """Display a list of projects and let user select one."""
     print_header()
     print(f"{Fore.YELLOW}{Style.BRIGHT}Select a project:{Style.RESET_ALL}")
     
-    projects = get_project_list()
+    projects = get_project_list(config_file)
     if not projects:
         print(f"{Fore.YELLOW}No projects configured. Please add a project first.{Fore.RESET}")
         input("Press Enter to continue...")
@@ -230,7 +239,7 @@ def display_projects() -> int:
             print(f"{Fore.RED}Please enter a number.{Fore.RESET}")
 
 
-def display_vms(project: str) -> Tuple[Optional[Dict[str, Any]], int]:
+def display_vms(project: str, config_file: str = None) -> Tuple[Optional[Dict[str, Any]], int]:
     """Display VMs for a project and let user select one."""
     print_header()
     print(f"{Fore.YELLOW}{Style.BRIGHT}Project: {project}{Style.RESET_ALL}")
@@ -275,7 +284,7 @@ def display_vms(project: str) -> Tuple[Optional[Dict[str, Any]], int]:
             
         statuses = {}
         # Load configuration to check for stored VM descriptions
-        config = load_config()
+        config = load_config(config_file)
         project_config = config.get("projects", {}).get(project, {})
         configured_vms = project_config.get("vms", [])
         
@@ -340,7 +349,7 @@ def display_vms(project: str) -> Tuple[Optional[Dict[str, Any]], int]:
         if project_config.get("vms") != configured_vms:
             project_config["vms"] = configured_vms
             config["projects"][project] = project_config
-            save_config(config)
+            save_config(config, config_file)
         
         # Sort VMs by name
         vms.sort(key=lambda x: x["name"])
@@ -1304,15 +1313,15 @@ def view_cloud_run_logs(project: str, service_name: str, region: str):
     input("\nPress Enter to continue...")
 
 
-def manage_cloud_run():
+def manage_cloud_run(config_file: str):
     """Main flow for Cloud Run management."""
     while True:
-        project_choice = display_projects()
+        project_choice = display_projects(config_file)
         
         if project_choice == 0:
             return
         
-        project = get_project_list()[project_choice - 1]
+        project = get_project_list(config_file)[project_choice - 1]
         
         while True:
             service, service_choice = display_cloud_run_services(project)
@@ -1324,18 +1333,18 @@ def manage_cloud_run():
                 continue
 
 
-def manage_vms():
+def manage_vms(config_file: str):
     """Main flow for VM management."""
     while True:
-        project_choice = display_projects()
+        project_choice = display_projects(config_file)
         
         if project_choice == 0:
             return
         
-        project = get_project_list()[project_choice - 1]
+        project = get_project_list(config_file)[project_choice - 1]
         
         while True:
-            vm, vm_choice = display_vms(project)
+            vm, vm_choice = display_vms(project, config_file)
             if vm_choice == 0:
                 break
             
@@ -1344,7 +1353,7 @@ def manage_vms():
                 continue
 
 
-def manage_projects(config: Dict[str, Any]) -> None:
+def manage_projects(config: Dict[str, Any], config_file: str) -> None:
     """Manage projects in the configuration."""
     while True:
         print_header()
@@ -1361,7 +1370,7 @@ def manage_projects(config: Dict[str, Any]) -> None:
             if choice == 0:
                 return
             elif choice == 1:
-                projects = get_project_list()
+                projects = get_project_list(config_file)
                 if not projects:
                     print(f"{Fore.YELLOW}No projects configured.{Fore.RESET}")
                 else:
@@ -1376,11 +1385,11 @@ def manage_projects(config: Dict[str, Any]) -> None:
                         print(f"{Fore.RED}Project already exists.{Fore.RESET}")
                     else:
                         config["projects"][project_name] = {"vms": []}
-                        save_config(config)
+                        save_config(config, config_file)
                         print(f"{Fore.GREEN}Project added successfully.{Fore.RESET}")
                 input("\nPress Enter to continue...")
             elif choice == 3:
-                projects = get_project_list()
+                projects = get_project_list(config_file)
                 if not projects:
                     print(f"{Fore.YELLOW}No projects to remove.{Fore.RESET}")
                     input("\nPress Enter to continue...")
@@ -1400,7 +1409,7 @@ def manage_projects(config: Dict[str, Any]) -> None:
                         confirm = input(f"{Fore.YELLOW}Are you sure you want to remove {project_to_remove}? (y/N): {Fore.RESET}")
                         if confirm.lower() == 'y':
                             del config["projects"][project_to_remove]
-                            save_config(config)
+                            save_config(config, config_file)
                             print(f"{Fore.GREEN}Project removed successfully.{Fore.RESET}")
                 except ValueError:
                     print(f"{Fore.RED}Invalid choice.{Fore.RESET}")
@@ -1444,14 +1453,15 @@ def main():
         Fore = ForeStub()
         Style = StyleStub()
     
-    # Load configuration
-    config = load_config()
+    # Load configuration using the path from args
+    config = load_config(args.config)
     
     # Display debug information if --debug flag is set
     if args.debug:
         print(f"{Fore.BLUE}Debug mode enabled{Fore.RESET}")
         print(f"Python version: {sys.version}")
         print(f"Operating system: {sys.platform}")
+        print(f"Config file path: {args.config}")
         print()
     
     # Main loop
@@ -1463,11 +1473,11 @@ def main():
                 print(f"{Fore.GREEN}Goodbye!{Fore.RESET}")
                 sys.exit(0)
             elif main_choice == 1:
-                manage_vms()
+                manage_vms(args.config)
             elif main_choice == 2:
-                manage_cloud_run()
+                manage_cloud_run(args.config)
             elif main_choice == 3:
-                manage_projects(config)
+                manage_projects(config, args.config)
     except KeyboardInterrupt:
         print(f"\n{Fore.GREEN}Goodbye!{Fore.RESET}")
         sys.exit(0)
@@ -1485,6 +1495,7 @@ def parse_args():
     parser.add_argument('--version', action='version', version='1.1')
     parser.add_argument('--debug', action='store_true', help='Enable debug mode')
     parser.add_argument('--no-color', action='store_true', help='Disable colored output')
+    parser.add_argument('--config', type=str, help='Path to config file', default=CONFIG_FILE)
     return parser.parse_args()
 
 

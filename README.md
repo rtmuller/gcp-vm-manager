@@ -70,6 +70,7 @@ python gcp-vm-manager.py
 - `--version`: Show version information
 - `--debug`: Enable debug mode for additional logging
 - `--no-color`: Disable colored output
+- `--config`: Specify path to custom config file (e.g., `--config /path/to/my-config.json`)
 
 ## Configuration
 
