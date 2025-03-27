@@ -9,23 +9,39 @@ A powerful command-line utility for managing Google Cloud Platform (GCP) Virtual
 
 ## Features
 
-- Interactive menu with real-time VM status
-- Quick SSH access to VMs
-- Common VM operations (start, stop, reset)
-- View VM details and logs
-- Transfer files to/from VMs
-- Run commands on VMs remotely
-- Project-wide operations
-- SSH access to Cloud Run instances
-- Rich terminal interface with color support
-- Debug mode for troubleshooting
-- Project management (add, remove, list projects)
+- **VM Management**
+  - List all VMs across multiple projects
+  - Start/Stop/Reset VMs
+  - SSH into VMs
+  - View VM details and logs
+  - Upload/Download files to/from VMs
+  - Run commands on VMs
+  - Configure port forwarding for VMs
+- **Cloud Run Management**
+  - List Cloud Run services
+  - View service details
+  - View service logs
+  - Deploy new revisions
+  - Rollback to previous revisions
+- **Project Management**
+  - List configured projects
+  - Add/Remove projects
+  - Configure VM descriptions
+- **User-Friendly Interface**
+  - Interactive menus
+  - Colored output
+  - Clear error messages
+  - Debug mode for troubleshooting
 
 ## Prerequisites
 
 - Python 3.8 or higher
 - Google Cloud SDK installed and configured
 - Appropriate GCP permissions
+- IAM roles:
+  - `roles/compute.instanceAdmin.v1` for VM management
+  - `roles/run.admin` for Cloud Run management
+  - `roles/iam.serviceAccountUser` for service account operations
 
 ## Installation
 
@@ -68,7 +84,7 @@ python gcp-vm-manager.py
 ### Command Line Options
 
 - `--version`: Show version information
-- `--debug`: Enable debug mode for additional logging
+- `--debug`: Enable debug mode for detailed information
 - `--no-color`: Disable colored output
 - `--config`: Specify path to custom config file (e.g., `--config /path/to/my-config.json`)
 
@@ -84,6 +100,19 @@ gcloud auth login
 2. Set up your project:
 ```bash
 gcloud config set project YOUR_PROJECT_ID
+```
+
+The tool uses a `config.json` file to store project configurations and VM descriptions. You can specify a custom config file using the `--config` option.
+
+Example config.json:
+```json
+{
+    "projects": {
+        "my-project": {
+            "vms": []
+        }
+    }
+}
 ```
 
 ### Project Management
@@ -192,3 +221,21 @@ Rafael
 - Google Cloud Platform
 - Rich library for terminal formatting
 - Colorama for cross-platform color support 
+
+### Port Forwarding
+
+The port forwarding feature allows you to create secure tunnels to your VM's ports:
+
+1. Select a VM that is in RUNNING state
+2. Choose "Configure Port Forwarding" from the VM actions menu
+3. Enter the remote port (port on the VM)
+4. Enter the local port (port on your machine)
+5. The tunnel will be established using IAP
+6. Press Ctrl+C to stop the port forwarding
+
+Example:
+```bash
+# If you want to forward port 8080 from the VM to your local port 8080:
+Remote port: 8080
+Local port: 8080
+``` 
