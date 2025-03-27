@@ -454,22 +454,25 @@ def vm_action_menu(project: str, vm: Dict[str, Any]) -> int:
         if status == "RUNNING":
             print(f"2) Stop VM")
             print(f"3) Reset VM")
+            print(f"4) Configure Port Forwarding")
         elif status == "TERMINATED" or status == "STOPPED":
             print(f"2) Start VM")
             print(f"3) [Disabled] Reset VM")
+            print(f"4) [Disabled] Configure Port Forwarding")
         else:
             print(f"2) [Disabled] Stop VM")
             print(f"3) [Disabled] Reset VM")
+            print(f"4) [Disabled] Configure Port Forwarding")
         
-        print(f"4) View VM details")
-        print(f"5) View VM logs")
-        print(f"6) Upload file to VM")
-        print(f"7) Download file from VM")
-        print(f"8) Run command on VM")
+        print(f"5) View VM details")
+        print(f"6) View VM logs")
+        print(f"7) Upload file to VM")
+        print(f"8) Download file from VM")
+        print(f"9) Run command on VM")
         print(f"0) Back to VM selection")
         
         try:
-            choice = input(f"\n{Fore.CYAN}Enter your choice (0-8): {Fore.RESET}")
+            choice = input(f"\n{Fore.CYAN}Enter your choice (0-9): {Fore.RESET}")
             choice = int(choice)
             
             if choice == 0:
@@ -491,14 +494,20 @@ def vm_action_menu(project: str, vm: Dict[str, Any]) -> int:
                     print(f"{Fore.RED}Cannot reset VM while it's in {status} state.{Fore.RESET}")
                     input("Press Enter to continue...")
             elif choice == 4:
-                view_vm_details(project, vm_name, zone)
+                if status == "RUNNING":
+                    configure_port_forwarding(project, vm_name, zone)
+                else:
+                    print(f"{Fore.RED}Cannot configure port forwarding while VM is in {status} state.{Fore.RESET}")
+                    input("Press Enter to continue...")
             elif choice == 5:
-                view_vm_logs(project, vm_name, zone)
+                view_vm_details(project, vm_name, zone)
             elif choice == 6:
-                upload_file_to_vm(project, vm_name, zone)
+                view_vm_logs(project, vm_name, zone)
             elif choice == 7:
-                download_file_from_vm(project, vm_name, zone)
+                upload_file_to_vm(project, vm_name, zone)
             elif choice == 8:
+                download_file_from_vm(project, vm_name, zone)
+            elif choice == 9:
                 run_command_on_vm(project, vm_name, zone)
             else:
                 print(f"{Fore.RED}Invalid choice. Please try again.{Fore.RESET}")
@@ -1420,6 +1429,54 @@ def manage_projects(config: Dict[str, Any], config_file: str) -> None:
         except ValueError:
             print(f"{Fore.RED}Please enter a number.{Fore.RESET}")
             input("\nPress Enter to continue...")
+
+
+def configure_port_forwarding(project: str, vm_name: str, zone: str):
+    """Configure port forwarding for a VM."""
+    print(f"{Fore.CYAN}Configuring port forwarding for {vm_name}...{Fore.RESET}")
+    
+    # Get remote port
+    while True:
+        try:
+            remote_port = input(f"{Fore.CYAN}Enter remote port (e.g., 8080): {Fore.RESET}")
+            remote_port = int(remote_port)
+            if 1 <= remote_port <= 65535:
+                break
+            else:
+                print(f"{Fore.RED}Port must be between 1 and 65535.{Fore.RESET}")
+        except ValueError:
+            print(f"{Fore.RED}Please enter a valid port number.{Fore.RESET}")
+    
+    # Get local port
+    while True:
+        try:
+            local_port = input(f"{Fore.CYAN}Enter local port (e.g., 8080): {Fore.RESET}")
+            local_port = int(local_port)
+            if 1 <= local_port <= 65535:
+                break
+            else:
+                print(f"{Fore.RED}Port must be between 1 and 65535.{Fore.RESET}")
+        except ValueError:
+            print(f"{Fore.RED}Please enter a valid port number.{Fore.RESET}")
+    
+    # Construct the port forwarding command using start-iap-tunnel
+    cmd = ["gcloud", "compute", "start-iap-tunnel", vm_name, str(remote_port),
+           "--local-host-port", f"localhost:{local_port}",
+           "--project", project, "--zone", zone]
+    
+    print(f"\n{Fore.GREEN}Starting port forwarding...{Fore.RESET}")
+    print(f"{Fore.YELLOW}Remote port {remote_port} will be forwarded to local port {local_port}{Fore.RESET}")
+    print(f"{Fore.YELLOW}Press Ctrl+C to stop the port forwarding{Fore.RESET}")
+    
+    try:
+        # Run the command directly (don't capture output for interactive SSH)
+        subprocess.run(cmd)
+    except KeyboardInterrupt:
+        print(f"\n{Fore.GREEN}Port forwarding stopped.{Fore.RESET}")
+    except Exception as e:
+        print(f"{Fore.RED}Error setting up port forwarding: {str(e)}{Fore.RESET}")
+    
+    input("\nPress Enter to continue...")
 
 
 def main():
