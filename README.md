@@ -1,7 +1,7 @@
 # GCP VM Manager
 
-[![Python Tests](https://github.com/yourusername/gcp-vm-manager/actions/workflows/python-tests.yml/badge.svg)](https://github.com/yourusername/gcp-vm-manager/actions/workflows/python-tests.yml)
-[![codecov](https://codecov.io/gh/yourusername/gcp-vm-manager/branch/main/graph/badge.svg)](https://codecov.io/gh/yourusername/gcp-vm-manager)
+[![Python Tests](https://github.com/rtmuller/gcp-vm-manager/actions/workflows/python-tests.yml/badge.svg)](https://github.com/rtmuller/gcp-vm-manager/actions/workflows/python-tests.yml)
+[![codecov](https://codecov.io/gh/rtmuller/gcp-vm-manager/branch/main/graph/badge.svg)](https://codecov.io/gh/rtmuller/gcp-vm-manager)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 
@@ -45,17 +45,9 @@ A powerful command-line utility for managing Google Cloud Platform (GCP) Virtual
 
 ## Installation
 
-### From PyPI (Recommended)
-
-```bash
-pip install gcp-vm-manager
-```
-
-### From Source
-
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/gcp-vm-manager.git
+git clone https://github.com/rtmuller/gcp-vm-manager.git
 cd gcp-vm-manager
 ```
 
@@ -74,10 +66,6 @@ cp config.json.template config.json
 Run the tool:
 
 ```bash
-# If installed from PyPI
-gcp-vm-manager
-
-# If installed from source
 python gcp-vm-manager.py
 ```
 
@@ -214,7 +202,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Author
 
-Rafael
+**Rafael Muller** · [GitHub](https://github.com/rtmuller) · [LinkedIn](https://www.linkedin.com/in/rafaelmuller) · [Medium](https://medium.com/@rafael_muller)
 
 ## Acknowledgments
 
